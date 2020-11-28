@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="db.properties"/>
+
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+    <!--    别名是为了简化对类名的指定，-->
+    <typeAliases>
+        <package name="com.fan.domain"/>
+    </typeAliases>
+    <mappers>
+    <!--    name是包名
+    包中所有的mapper.xml能全部加载
+    包中的mapper文件和dao接口名字完全一样
+    -->
+       <package name="com.fan.dao"/>
+    </mappers>
+</configuration>

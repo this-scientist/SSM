@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+<!--spring配置文件-->
+    <context:property-placeholder location="classpath:conf/jdbc.properties"/>
+<!--    声明数据源 连接数据库-->
+    <bean id="datasource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+<!--    sqlsessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--        name是调用bean的setdatasource方法  可以ctrl + b一下这个name
+                    ref对应的就是上面的datasource bean
+        -->
+        <property name="dataSource" ref="datasource"></property>
+<!--        加载mapper文件的相关信息-->
+        <property name="configLocation" value="classpath:conf/mybatis.xml"/>
+<!--        上面两个合起来就是原来的mybatis配置文件-->
+    </bean>
+
+<!--创建dao对象-->
+<!--    在mybatis中sqlsession 先open 执行sql语句（根据mapper中的dao的 namespace+sql 标签id）-->
+<!--    MapperScannerConfigurer内部调用getmapper-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    <!--        得到sqlsessionfactory 加载mybatis的配置文件 得到mapper文件的信息-->
+<!--        mapper文件中已经标明了dao接口和方法的相关信息-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    <!--   扫描包中的所有接口     dao包中的接口都会执行getmapper方法（动态代理）
+        产生相应的dao对象，产生的对象会生成对应的sqlsession，
+        得到sqlid 执行对应mapper文件中的sql语句
+        这样就可以访问数据库了
+        创建好的dao对象放入spring容器中
+     -->
+        <property name="basePackage" value="com.fan.dao"/>
+    </bean>
+
+<!--@service-->
+    <context:component-scan base-package="com.fan.service"/>
+<!--    添加事务-->
+</beans>
